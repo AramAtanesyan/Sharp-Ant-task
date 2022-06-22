@@ -13,7 +13,7 @@
             v-for="child in node.children" 
             :node="child" 
             :spacing="spacing + 10" 
-            :checked="checked"
+            :checked="checked || isNodeExistInSelected(child)"
         />
     </div>
 </template>
@@ -21,6 +21,7 @@
 
 
 <script>
+import { mapGetters } from 'vuex';
 export default {
     name: 'ProductNode',
     props: {
@@ -43,6 +44,12 @@ export default {
         }
     },
     methods: {
+        // todo: move the duplication
+        isNodeExistInSelected(child) {
+            const selectedProducts = this.selectedProducts;
+            return selectedProducts.filter(selectedProduct => selectedProduct.id === child.id).length > 0;
+
+        },
         toggleChildren() {
             this.childrenAreVisible = !this.childrenAreVisible;
         },
@@ -56,6 +63,9 @@ export default {
         }
     },
     computed: {
+         ...mapGetters({
+            selectedProducts: 'getSelectedProductsFormatted'
+        }),
         nodeMargin() {
             return {
                 'margin-left': `${this.spacing}px`
@@ -63,7 +73,8 @@ export default {
         },
         hasChildren() {
             return this.node.children?.length > 0
-        }
+        },
+       
     }
 }
 </script>
